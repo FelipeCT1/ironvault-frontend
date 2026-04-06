@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { DecimalPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { CarrinhoService } from '../../../core/services/carrinho.service';
@@ -9,14 +9,14 @@ import { FreteService } from '../../../core/services/frete.service';
 import { CupomService } from '../../../core/services/cupom.service';
 import { VendaService } from '../../../core/services/venda.service';
 
-import { Endereco, CartaoCredito } from '../../../models/cliente.model';
-import { OpcaoFrete, Cupom } from '../../../models/carrinho.model';
-import { PagamentoCartao, Venda } from '../../../models/venda.model';
+import { Endereco, CartaoCredito } from '../../../core/models/cliente.model';
+import { OpcaoFrete, Cupom } from '../../../core/models/carrinho.model';
+import { PagamentoCartao, Venda } from '../../../core/models/venda.model';
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, DecimalPipe],
+  imports: [RouterLink, ReactiveFormsModule, CurrencyPipe],
   template: `
     <div class="page-wrapper" style="max-width: 1100px">
       <div class="page-header">
@@ -263,7 +263,7 @@ import { PagamentoCartao, Venda } from '../../../models/venda.model';
 
             <div class="resumo-linha">
               <span>Frete ({{ freteSelecionado()?.nome ?? 'Não selecionado' }})</span>
-              <span>{{ freteSelecionado()?.valor | currency:'BRL' ?? '—' }}</span>
+              <span>{{ (freteSelecionado()?.valor ?? 0) | currency:'BRL' }}</span>
             </div>
 
             <div class="resumo-total">
@@ -692,7 +692,13 @@ export class CheckoutComponent implements OnInit {
     this.finalizando.set(true);
 
     const cliente = this.authService.clienteAtual();
-    if (!cliente) return;
+    const frete = this.freteSelecionado();
+    const endereco = this.enderecoSelecionado();
+
+    if (!cliente || !frete || !endereco) {
+      this.finalizando.set(false);
+      return;
+    }
 
     const dto = {
       clienteId: cliente.id!,
@@ -702,11 +708,11 @@ export class CheckoutComponent implements OnInit {
         quantidade: item.quantidade,
         precoUnitario: item.precoUnitario,
       })),
-      enderecoEntrega: this.enderecoSelecionado()!,
+      enderecoEntrega: endereco,
       frete: {
-        tipo: this.freteSelecionado()?.id,
-        prazoDias: this.freteSelecionado()?.prazoDias,
-        valor: this.freteSelecionado()?.valor,
+        tipo: frete.id,
+        prazoDias: frete.prazoDias,
+        valor: frete.valor,
       },
       pagamentosCartao: this.pagamentosCartao()
         .filter(p => p.cartaoId && p.valor > 0)

@@ -1,13 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
-import { DecimalPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 
-import { Venda, STATUS_LABELS, STATUS_COLORS } from '../../../models/venda.model';
+import { Venda, STATUS_LABELS, STATUS_COLORS, StatusVenda } from '../../../core/models/venda.model';
 
 @Component({
   selector: 'app-pedido-confirmado',
   standalone: true,
-  imports: [RouterLink, DecimalPipe, DatePipe],
+  imports: [RouterLink, CurrencyPipe, DatePipe],
   template: `
     <div class="page-wrapper" style="max-width: 800px; text-align: center">
       @if (venda()) {
@@ -174,12 +174,12 @@ export class PedidoConfirmadoComponent {
   }
 
   statusLabel(): string {
-    const status = this.venda()?.status;
+    const status = this.venda()?.status as StatusVenda | undefined;
     return status ? STATUS_LABELS[status] : '';
   }
 
   statusColor(): string {
-    const status = this.venda()?.status;
+    const status = this.venda()?.status as StatusVenda | undefined;
     return status ? STATUS_COLORS[status] : 'azul';
   }
 }

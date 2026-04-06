@@ -16,7 +16,7 @@ export interface ItemVenda {
   produtoNome: string;
   quantidade: number;
   precoUnitario: number;
-  subtotal: number;
+  subtotal?: number;
 }
 
 export interface PagamentoCartao {
@@ -25,11 +25,18 @@ export interface PagamentoCartao {
   valor: number;
 }
 
+export interface FreteDTO {
+  tipo: string;
+  prazoDias: number;
+  valor: number;
+}
+
 export interface FinalizarCompraDTO {
   clienteId: number;
+  itens: ItemVenda[];
   enderecoEntrega: Endereco;
-  frete: OpcaoFrete;
-  pagamentosCartao: PagamentoCartao[];
+  frete: FreteDTO;
+  pagamentosCartao: { cartaoId?: number; bandeira?: string; ultimosDigitos?: string; valor: number }[];
   cupomPromocionalId?: number;
   cuponsTrocaIds: number[];
 }

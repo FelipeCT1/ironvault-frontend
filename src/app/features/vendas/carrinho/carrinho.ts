@@ -1,14 +1,14 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DecimalPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 
 import { CarrinhoService } from '../../../core/services/carrinho.service';
-import { ItemCarrinho } from '../../../models/carrinho.model';
+import { ItemCarrinho } from '../../../core/models/carrinho.model';
 
 @Component({
   selector: 'app-carrinho',
   standalone: true,
-  imports: [RouterLink, DecimalPipe],
+  imports: [RouterLink, CurrencyPipe],
   template: `
     <div class="page-wrapper" style="max-width: 960px">
       <div class="page-header">

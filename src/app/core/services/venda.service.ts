@@ -21,7 +21,12 @@ export class VendaService {
           codigoPedido: `PED-${String(this.contadorPedidos).padStart(4, '0')}`,
           itens: [],
           enderecoEntrega: dto.enderecoEntrega,
-          frete: dto.frete,
+          frete: {
+            id: dto.frete.tipo,
+            nome: dto.frete.tipo,
+            prazoDias: dto.frete.prazoDias,
+            valor: dto.frete.valor,
+          },
           pagamentosCartao: dto.pagamentosCartao,
           cupomPromocional: null,
           cuponsTroca: [],

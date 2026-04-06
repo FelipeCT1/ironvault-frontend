@@ -1,16 +1,16 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { DecimalPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 
 import { ProdutoService } from '../../../core/services/produto.service';
 import { CarrinhoService } from '../../../core/services/carrinho.service';
-import { Produto } from '../../../models/produto.model';
+import { Produto } from '../../../core/models/produto.model';
 
 @Component({
   selector: 'app-lista-produtos',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, DecimalPipe],
+  imports: [RouterLink, ReactiveFormsModule, CurrencyPipe],
   template: `
     <div class="page-wrapper">
       <div class="page-header">
