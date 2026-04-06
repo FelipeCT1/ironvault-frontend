@@ -696,9 +696,29 @@ export class CheckoutComponent implements OnInit {
 
     const dto = {
       clienteId: cliente.id!,
+      itens: this.itens().map(item => ({
+        produtoId: item.produto.id,
+        produtoNome: item.produto.nome,
+        quantidade: item.quantidade,
+        precoUnitario: item.precoUnitario,
+      })),
       enderecoEntrega: this.enderecoSelecionado()!,
-      frete: this.freteSelecionado()!,
-      pagamentosCartao: this.pagamentosCartao().filter(p => p.cartaoId && p.valor > 0),
+      frete: {
+        tipo: this.freteSelecionado()?.id,
+        prazoDias: this.freteSelecionado()?.prazoDias,
+        valor: this.freteSelecionado()?.valor,
+      },
+      pagamentosCartao: this.pagamentosCartao()
+        .filter(p => p.cartaoId && p.valor > 0)
+        .map(p => {
+          const cartao = this.cartoes().find(c => c.id === p.cartaoId);
+          return {
+            cartaoId: p.cartaoId,
+            bandeira: cartao?.bandeira,
+            ultimosDigitos: cartao?.numero?.replace(/\D/g, '').slice(-4),
+            valor: p.valor,
+          };
+        }),
       cupomPromocionalId: this.cupomPromocional()?.id,
       cuponsTrocaIds: this.cuponsTrocaSelecionados().map(c => c.id),
     };

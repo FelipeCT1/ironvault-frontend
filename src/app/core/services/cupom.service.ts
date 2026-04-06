@@ -1,10 +1,16 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Cupom } from '../models/carrinho.model';
-import { of, Observable, delay } from 'rxjs';
+import { Observable, of, delay } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class CupomService {
-  private readonly cupons: Cupom[] = [
+  private readonly http = inject(HttpClient);
+  private readonly base = '/api/v1/cupons';
+
+  // Fallback para mocks caso backend não esteja disponível
+  private readonly mockCupons: Cupom[] = [
     {
       id: 1,
       codigo: 'PRIMEIRA10',
@@ -46,28 +52,39 @@ export class CupomService {
   ];
 
   validarCupom(codigo: string): Observable<Cupom | null> {
-    const cupom = this.cupons.find(
-      (c) => c.codigo.toUpperCase() === codigo.toUpperCase()
+    return this.http.get<any>(`${this.base}/validar/${codigo}`).pipe(
+      map(p => this.mapCupom(p)),
+      catchError(() => {
+        // Fallback para mock
+        const cupom = this.mockCupons.find(
+          (c) => c.codigo.toUpperCase() === codigo.toUpperCase()
+        );
+        return of(cupom || null).pipe(delay(200));
+      })
     );
-
-    if (!cupom) {
-      return of(null).pipe(delay(200));
-    }
-
-    // Verifica validade
-    const hoje = new Date();
-    const validoAte = new Date(cupom.validoAte);
-    if (validoAte < hoje) {
-      return of(null).pipe(delay(200));
-    }
-
-    return of(cupom).pipe(delay(200));
   }
 
   listarCuponsTroca(clienteId: number): Observable<Cupom[]> {
-    const cupons = this.cupons.filter(
-      (c) => c.tipo === 'TROCA' && c.clienteId === clienteId
+    return this.http.get<any[]>(`${this.base}/troca/cliente/${clienteId}`).pipe(
+      map(data => data.map(p => this.mapCupom(p))),
+      catchError(() => {
+        // Fallback para mock
+        const cupons = this.mockCupons.filter(
+          (c) => c.tipo === 'TROCA' && c.clienteId === clienteId
+        );
+        return of(cupons).pipe(delay(150));
+      })
     );
-    return of(cupons).pipe(delay(150));
+  }
+
+  private mapCupom(p: any): Cupom {
+    return {
+      id: p.id,
+      codigo: p.codigo,
+      tipo: p.tipo,
+      valor: p.valor,
+      validoAte: p.validoAte,
+      clienteId: p.clienteId,
+    };
   }
 }
