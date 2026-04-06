@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+
+import { CarrinhoService } from '../../../core/services/carrinho.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,10 +12,15 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       IRONVAULT · Sistema de Gestão · LES 1º/2026
     </div>
     <nav class="navbar">
-      <a routerLink="/clientes" class="navbar-logo">
+      <a routerLink="/produtos" class="navbar-logo">
         IRON<span>VAULT</span>
       </a>
       <ul class="navbar-links">
+        <li>
+          <a routerLink="/produtos" routerLinkActive="active">
+            📦 Produtos
+          </a>
+        </li>
         <li>
           <a routerLink="/clientes" routerLinkActive="active">
             👤 Clientes
@@ -23,6 +30,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
         <li><span class="nav-soon">🔄 Trocas</span></li>
         <li><span class="nav-soon">🤖 IA</span></li>
       </ul>
+      <a routerLink="/carrinho" class="navbar-cart">
+        🛒 Carrinho
+        @if (quantidadeItens() > 0) {
+          <span class="cart-badge">{{ quantidadeItens() }}</span>
+        }
+      </a>
     </nav>
   `,
   styles: [`
@@ -62,6 +75,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       display: flex;
       gap: 4px;
       list-style: none;
+      flex: 1;
     }
     .navbar-links a {
       display: block;
@@ -87,6 +101,35 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       color: var(--borda);
       cursor: not-allowed;
     }
+    .navbar-cart {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--painel);
+      border: 1px solid var(--borda);
+      border-radius: 4px;
+      color: var(--branco);
+      text-decoration: none;
+      font-size: .8rem;
+      font-weight: 600;
+      transition: border-color .2s, background .2s;
+    }
+    .navbar-cart:hover {
+      border-color: var(--acento);
+      background: rgba(232,255,0,.08);
+    }
+    .cart-badge {
+      background: var(--acento);
+      color: var(--preto);
+      font-size: .7rem;
+      font-weight: 900;
+      padding: 2px 7px;
+      border-radius: 12px;
+    }
   `]
 })
-export class NavbarComponent {}
+export class NavbarComponent {
+  private readonly carrinhoService = inject(CarrinhoService);
+  quantidadeItens = this.carrinhoService.quantidadeItens;
+}
