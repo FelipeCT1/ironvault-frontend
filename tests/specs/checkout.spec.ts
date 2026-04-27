@@ -47,13 +47,11 @@ test.describe('Carrinho e Checkout', () => {
   test('15 - Pedido confirmado exibe dados', async ({ clientePage }) => {
     await clientePage.goto('/pedidos');
     await clientePage.waitForTimeout(500);
-    const primeiraLinha = clientePage.locator('table tbody tr').first();
-    if (await primeiraLinha.isVisible()) {
-      const href = await primeiraLinha.locator('a').getAttribute('href');
-      if (href) {
-        await clientePage.goto(href);
-        await expect(clientePage.locator('.card-titulo')).toBeVisible();
-      }
+    const linha = clientePage.locator('table tbody tr').first();
+    if (await linha.isVisible()) {
+      await linha.click();
+      await clientePage.waitForURL(/\/pedidos\/\d+/, { timeout: 5000 });
+      await expect(clientePage.locator('h1')).toBeVisible();
     }
   });
 });

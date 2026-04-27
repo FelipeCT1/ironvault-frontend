@@ -28,6 +28,20 @@ test.describe('CRUD de Clientes', () => {
     await adminPage.fill('input[formcontrolname="email"]', email);
     await adminPage.fill('input[formcontrolname="senha"]', 'Teste@123');
     await adminPage.fill('input[formcontrolname="confirmacaoSenha"]', 'Teste@123');
+
+    await adminPage.locator('button').filter({ hasText: '+ Endereço' }).click();
+    await adminPage.waitForTimeout(300);
+    const endForm = adminPage.locator('[formarrayname="enderecos"] [formgroupname="0"]');
+    await endForm.locator('[formcontrolname="logradouro"]').fill('Rua Teste');
+    await endForm.locator('[formcontrolname="numero"]').fill('123');
+    await endForm.locator('[formcontrolname="bairro"]').fill('Centro');
+    await endForm.locator('[formcontrolname="cep"]').fill('01001000');
+    await endForm.locator('[formcontrolname="cidade"]').fill('São Paulo');
+    await endForm.locator('[formcontrolname="estado"]').fill('SP');
+    await endForm.locator('[formcontrolname="apelido"]').fill('Casa');
+    await endForm.locator('input[type="checkbox"]').first().check();
+    await endForm.locator('input[type="checkbox"]').nth(1).check();
+
     const botao = adminPage.locator('button').filter({ hasText: 'Cadastrar' });
     await expect(botao).toBeEnabled({ timeout: 5000 });
     await botao.click();
