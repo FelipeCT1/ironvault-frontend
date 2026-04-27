@@ -59,7 +59,7 @@ import { ModalComponent } from '../../../shared/components/modal/modal';
       }
     </div>
 
-    <app-modal [aberto]="modalAberto()" titulo="Limpar Carrinho" (fechar)="modalAberto.set(false)">
+    <app-modal [aberto]="modalAberto()" [mostrarFooter]="true" titulo="Limpar Carrinho" (fechar)="modalAberto.set(false)">
       <p>Tem certeza que deseja limpar todos os itens do carrinho?</p>
       <div modal-footer>
         <button class="btn btn-outline" (click)="modalAberto.set(false)">Cancelar</button>

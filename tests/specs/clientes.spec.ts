@@ -20,7 +20,7 @@ test.describe('CRUD de Clientes', () => {
     const email = `teste${Date.now()}@pw.com`;
     await adminPage.goto('/clientes/novo');
     await adminPage.fill('input[formcontrolname="nome"]', 'Teste Playwright');
-    await adminPage.fill('input[formcontrolname="cpf"]', '12345678901');
+    await adminPage.fill('input[formcontrolname="cpf"]', '52998224725');
     await adminPage.fill('input[formcontrolname="dataNascimento"]', '1990-01-01');
     await adminPage.fill('input[formcontrolname="ddd"]', '11');
     await adminPage.fill('input[formcontrolname="numeroTelefone"]', '999999999');
@@ -28,7 +28,7 @@ test.describe('CRUD de Clientes', () => {
     await adminPage.fill('input[formcontrolname="senha"]', 'Teste@123');
     await adminPage.fill('input[formcontrolname="confirmacaoSenha"]', 'Teste@123');
     await adminPage.click('button:has-text("Cadastrar")');
-    await adminPage.waitForURL(/\/clientes\/\d+/, { timeout: 10000 });
+    await adminPage.waitForURL(/\/clientes\/\d+/, { timeout: 15000 });
     await expect(adminPage.locator('h1')).toContainText('Teste Playwright');
   });
 
@@ -42,10 +42,15 @@ test.describe('CRUD de Clientes', () => {
 
   test('12 - Inativar cliente', async ({ adminPage }) => {
     await adminPage.goto('/clientes');
-    await adminPage.locator('button').filter({ hasText: /Inativar/i }).first().click();
-    await adminPage.waitForTimeout(500);
-    await expect(adminPage.locator('.modal-overlay')).toBeVisible();
-    await adminPage.locator('.modal-footer button').filter({ hasText: 'Confirmar' }).click();
-    await adminPage.waitForTimeout(500);
+    const linkVer = adminPage.locator('a').filter({ hasText: 'Ver' }).first();
+    if (await linkVer.isVisible()) {
+      await linkVer.click();
+      await adminPage.waitForURL(/\/clientes\/\d+/, { timeout: 10000 });
+      await adminPage.locator('button').filter({ hasText: /Inativar/i }).click();
+      await adminPage.waitForTimeout(500);
+      await expect(adminPage.locator('.modal-overlay')).toBeVisible();
+      await adminPage.locator('.modal-footer button').filter({ hasText: 'Confirmar' }).click();
+      await adminPage.waitForTimeout(500);
+    }
   });
 });

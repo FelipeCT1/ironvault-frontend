@@ -112,7 +112,7 @@ import { FormsModule } from '@angular/forms';
       }
     </div>
 
-    <app-modal [aberto]="modalAberto()" titulo="Confirmação" (fechar)="modalAberto.set(false)">
+    <app-modal [aberto]="modalAberto()" [mostrarFooter]="true" titulo="Confirmação" (fechar)="modalAberto.set(false)">
       <p>Tem certeza que deseja {{ cliente()?.ativo !== false ? 'inativar' : 'ativar' }} este cliente?</p>
       <div modal-footer>
         <button class="btn btn-secondary" (click)="modalAberto.set(false)">Cancelar</button>
