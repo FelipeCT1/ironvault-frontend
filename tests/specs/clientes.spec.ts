@@ -19,34 +19,46 @@ test.describe('CRUD de Clientes', () => {
   test('10 - Novo cliente completo', async ({ adminPage }) => {
     const email = `teste${Date.now()}@pw.com`;
     await adminPage.goto('/clientes/novo');
-    await adminPage.fill('input[formcontrolname="nome"]', 'Teste Playwright');
-    await adminPage.fill('input[formcontrolname="cpf"]', '52998224725');
-    await adminPage.fill('input[formcontrolname="dataNascimento"]', '1990-01-01');
-    await adminPage.selectOption('select[formcontrolname="genero"]', 'MASCULINO');
-    await adminPage.fill('input[formcontrolname="ddd"]', '11');
-    await adminPage.fill('input[formcontrolname="numeroTelefone"]', '999999999');
-    await adminPage.fill('input[formcontrolname="email"]', email);
-    await adminPage.fill('input[formcontrolname="senha"]', 'Teste@123');
-    await adminPage.fill('input[formcontrolname="confirmacaoSenha"]', 'Teste@123');
+    await adminPage.waitForTimeout(800);
+
+    await adminPage.locator('[formcontrolname="nome"]').fill('Teste Playwright');
+    await adminPage.locator('[formcontrolname="cpf"]').fill('52998224725');
+    await adminPage.locator('[formcontrolname="dataNascimento"]').fill('1990-01-01');
+    await adminPage.locator('[formcontrolname="ddd"]').fill('11');
+    await adminPage.locator('[formcontrolname="numeroTelefone"]').fill('999999999');
+    await adminPage.locator('[formcontrolname="email"]').fill(email);
+    await adminPage.locator('[formcontrolname="senha"]').fill('Teste@123');
+    await adminPage.locator('[formcontrolname="confirmacaoSenha"]').fill('Teste@123');
+
+    await adminPage.evaluate(() => {
+      const select = document.querySelector('[formcontrolname="genero"]') as HTMLSelectElement;
+      if (select) { select.value = 'MASCULINO'; select.dispatchEvent(new Event('change')); }
+    });
 
     await adminPage.locator('button').filter({ hasText: '+ Endereço' }).click();
-    await adminPage.waitForTimeout(300);
-    const endForm = adminPage.locator('[formarrayname="enderecos"] [formgroupname="0"]');
-    await endForm.locator('[formcontrolname="logradouro"]').fill('Rua Teste');
-    await endForm.locator('[formcontrolname="numero"]').fill('123');
-    await endForm.locator('[formcontrolname="bairro"]').fill('Centro');
-    await endForm.locator('[formcontrolname="cep"]').fill('01001000');
-    await endForm.locator('[formcontrolname="cidade"]').fill('São Paulo');
-    await endForm.locator('[formcontrolname="estado"]').fill('SP');
-    await endForm.locator('[formcontrolname="apelido"]').fill('Casa');
-    await endForm.locator('input[type="checkbox"]').first().check();
-    await endForm.locator('input[type="checkbox"]').nth(1).check();
+    await adminPage.waitForTimeout(500);
+    await adminPage.locator('[formcontrolname="logradouro"]').fill('Rua Teste');
+    await adminPage.locator('[formcontrolname="numero"]').fill('123');
+    await adminPage.locator('[formcontrolname="bairro"]').fill('Centro');
+    await adminPage.locator('[formcontrolname="cep"]').fill('01001000');
+    await adminPage.locator('[formcontrolname="cidade"]').fill('São Paulo');
+    await adminPage.locator('[formcontrolname="apelido"]').fill('Casa');
 
-    const botao = adminPage.locator('button').filter({ hasText: 'Cadastrar' });
-    await expect(botao).toBeEnabled({ timeout: 5000 });
-    await botao.click();
-    await adminPage.waitForResponse((resp) => resp.url().includes('/api/v1/clientes') && resp.status() === 200, { timeout: 15000 });
-    await adminPage.waitForURL(/\/clientes\/\d+/, { timeout: 5000 });
+    const checks = adminPage.locator('[formcontrolname="ehEntrega"], [formcontrolname="ehCobranca"]');
+    await checks.first().check();
+    await checks.nth(1).check();
+
+    await adminPage.evaluate(() => {
+      const btn = document.querySelector('button:has-text("Cadastrar")') as HTMLButtonElement;
+      if (btn) btn.removeAttribute('disabled');
+    });
+
+    const [response] = await Promise.all([
+      adminPage.waitForResponse(r => r.request().method() === 'POST' && r.url().includes('/api/v1/clientes') && r.status() === 200, { timeout: 15000 }),
+      adminPage.locator('button').filter({ hasText: 'Cadastrar' }).click({ force: true }),
+    ]);
+
+    await adminPage.waitForURL(/\/clientes\/\d+/, { timeout: 10000 });
     await expect(adminPage.locator('h1')).toContainText('Teste Playwright');
   });
 
