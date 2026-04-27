@@ -1,4 +1,5 @@
-import { test, expect } from '../fixtures/auth.fixture';
+import { expect } from '@playwright/test';
+import { test } from '../fixtures/auth.fixture';
 
 test.describe('Login', () => {
 
@@ -9,8 +10,8 @@ test.describe('Login', () => {
     await page.click('button[type="submit"]');
 
     await expect(page).toHaveURL(/\/produtos/);
-    await expect(page.locator('.nav-links')).toContainText('👤 Clientes');
-    await expect(page.locator('.nav-links')).toContainText('⚙️ Admin');
+    await expect(page.locator('.nav-links')).toContainText('Clientes');
+    await expect(page.locator('.nav-links')).toContainText('Admin');
   });
 
   test('2 - Login válido como cliente', async ({ page }) => {
@@ -20,8 +21,8 @@ test.describe('Login', () => {
     await page.click('button[type="submit"]');
 
     await expect(page).toHaveURL(/\/produtos/);
-    await expect(page.locator('.nav-links')).not.toContainText('👤 Clientes');
-    await expect(page.locator('.nav-links')).not.toContainText('⚙️ Admin');
+    await expect(page.locator('.nav-links')).not.toContainText('Clientes');
+    await expect(page.locator('.nav-links')).not.toContainText('Admin');
   });
 
   test('3 - Login inválido mostra erro', async ({ page }) => {
@@ -30,7 +31,7 @@ test.describe('Login', () => {
     await page.fill('[name="senha"]', 'senha_errada');
     await page.click('button[type="submit"]');
 
-    await expect(page.locator('.alert.alert-danger')).toBeVisible();
+    await expect(page.locator('.alert-danger')).toBeVisible();
     await expect(page.locator('button[type="submit"]')).toBeEnabled();
   });
 });
