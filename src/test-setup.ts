@@ -1,12 +1,8 @@
 import { getTestBed } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 
-// Minimal test environment for Angular standalone components
-const testModule = {
-  ngModule: class DynamicTestModule {},
-  imports: [BrowserModule, NoopAnimationsModule],
-  providers: [],
-};
-
-getTestBed().initTestEnvironment(BrowserModule, testModule);
+getTestBed().initTestEnvironment(
+  BrowserTestingModule,
+  platformBrowserTesting(),
+  { errorOnUnknownElements: true, errorOnUnknownProperties: true }
+);

@@ -1,28 +1,19 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
 import { VendaService } from './venda.service';
 import type { FinalizarCompraDTO, Venda } from '../models/venda.model';
 import { StatusVenda } from '../models/venda.model';
 
+function mockHttp() {
+  return { post: vi.fn(), get: vi.fn(), patch: vi.fn() } as any;
+}
+
 describe('VendaService', () => {
+  let http: ReturnType<typeof mockHttp>;
   let service: VendaService;
-  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        VendaService,
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
-    });
-    service = TestBed.inject(VendaService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
+    http = mockHttp();
+    service = new VendaService(http);
   });
 
   const mockVenda: Venda = {
@@ -52,44 +43,43 @@ describe('VendaService', () => {
       frete: { tipo: 'SEDEX', prazoDias: 3, valor: 15 },
       pagamentosCartao: [{ cartaoId: 1, valor: 205 }],
     };
+    http.post.mockReturnValue(of(mockVenda));
 
-    service.finalizarCompra(dto).subscribe(venda => {
-      expect(venda).toEqual(mockVenda);
-      expect(venda.status).toBe('EM_PROCESSAMENTO');
+    service.finalizarCompra(dto).subscribe(result => {
+      expect(result).toEqual(mockVenda);
+      expect(result.status).toBe('EM_PROCESSAMENTO');
     });
 
-    const req = httpMock.expectOne('/api/v1/vendas');
-    expect(req.request.method).toBe('POST');
-    req.flush(mockVenda);
+    expect(http.post).toHaveBeenCalledWith('/api/v1/vendas', dto);
   });
 
   it('CT-24: Consultar venda por ID deve retornar dados', () => {
-    service.consultarPorId(1).subscribe(venda => {
-      expect(venda.id).toBe(1);
-      expect(venda.codigoPedido).toBe('PED-0001');
+    http.get.mockReturnValue(of(mockVenda));
+
+    service.consultarPorId(1).subscribe(result => {
+      expect(result.id).toBe(1);
+      expect(result.codigoPedido).toBe('PED-0001');
     });
 
-    const req = httpMock.expectOne('/api/v1/vendas/1');
-    expect(req.request.method).toBe('GET');
-    req.flush(mockVenda);
+    expect(http.get).toHaveBeenCalledWith('/api/v1/vendas/1');
   });
 
   it('CT-25: Listar vendas do cliente deve retornar array', () => {
-    service.listarPorCliente(1).subscribe(vendas => {
-      expect(vendas.length).toBe(1);
-      expect(vendas[0].clienteId).toBe(1);
+    http.get.mockReturnValue(of([mockVenda]));
+
+    service.listarPorCliente(1).subscribe(result => {
+      expect(result.length).toBe(1);
+      expect(result[0].clienteId).toBe(1);
     });
 
-    const req = httpMock.expectOne('/api/v1/vendas/cliente/1');
-    expect(req.request.method).toBe('GET');
-    req.flush([mockVenda]);
+    expect(http.get).toHaveBeenCalledWith('/api/v1/vendas/cliente/1');
   });
 
   it('CT-26: Atualizar status deve chamar PATCH com ação correta', () => {
+    http.patch.mockReturnValue(of({}));
+
     service.atualizarStatus(1, 'aprovar').subscribe();
 
-    const req = httpMock.expectOne('/api/v1/vendas/1/aprovar');
-    expect(req.request.method).toBe('PATCH');
-    req.flush({});
+    expect(http.patch).toHaveBeenCalledWith('/api/v1/vendas/1/aprovar', {});
   });
 });

@@ -1,27 +1,18 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
 import { TrocaService } from './troca.service';
 import type { Troca, SolicitarTrocaDTO } from '../models/troca.model';
 
+function mockHttp() {
+  return { post: vi.fn(), get: vi.fn(), patch: vi.fn() } as any;
+}
+
 describe('TrocaService', () => {
+  let http: ReturnType<typeof mockHttp>;
   let service: TrocaService;
-  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        TrocaService,
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
-    });
-    service = TestBed.inject(TrocaService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
+    http = mockHttp();
+    service = new TrocaService(http);
   });
 
   const mockTroca: Troca = {
@@ -47,59 +38,56 @@ describe('TrocaService', () => {
       motivo: 'Produto com defeito',
       valorCredito: 80,
     };
+    http.post.mockReturnValue(of(mockTroca));
 
-    service.solicitar(dto).subscribe(troca => {
-      expect(troca.status).toBe('SOLICITADA');
-      expect(troca.motivo).toBe('Produto com defeito');
+    service.solicitar(dto).subscribe(result => {
+      expect(result.status).toBe('SOLICITADA');
+      expect(result.motivo).toBe('Produto com defeito');
     });
 
-    const req = httpMock.expectOne('/api/v1/trocas');
-    expect(req.request.method).toBe('POST');
-    req.flush(mockTroca);
+    expect(http.post).toHaveBeenCalledWith('/api/v1/trocas', dto);
   });
 
   it('CT-28: Autorizar troca deve chamar PATCH de autorizar', () => {
-    service.autorizar(1).subscribe(troca => {
-      expect(troca.status).toBe('SOLICITADA');
+    http.patch.mockReturnValue(of(mockTroca));
+
+    service.autorizar(1).subscribe(result => {
+      expect(result.status).toBe('SOLICITADA');
     });
 
-    const req = httpMock.expectOne('/api/v1/trocas/1/autorizar');
-    expect(req.request.method).toBe('PATCH');
-    req.flush(mockTroca);
+    expect(http.patch).toHaveBeenCalledWith('/api/v1/trocas/1/autorizar', {});
   });
 
   it('CT-29: Recusar troca deve chamar PATCH de recusar', () => {
     const trocaRecusada = { ...mockTroca, status: 'RECUSADA' as const };
+    http.patch.mockReturnValue(of(trocaRecusada));
 
-    service.recusar(1).subscribe(troca => {
-      expect(troca.status).toBe('RECUSADA');
+    service.recusar(1).subscribe(result => {
+      expect(result.status).toBe('RECUSADA');
     });
 
-    const req = httpMock.expectOne('/api/v1/trocas/1/recusar');
-    expect(req.request.method).toBe('PATCH');
-    req.flush(trocaRecusada);
+    expect(http.patch).toHaveBeenCalledWith('/api/v1/trocas/1/recusar', {});
   });
 
   it('CT-30: Concluir troca deve chamar PATCH de concluir', () => {
     const trocaConcluida = { ...mockTroca, status: 'CONCLUIDA' as const };
+    http.patch.mockReturnValue(of(trocaConcluida));
 
-    service.concluir(1).subscribe(troca => {
-      expect(troca.status).toBe('CONCLUIDA');
+    service.concluir(1).subscribe(result => {
+      expect(result.status).toBe('CONCLUIDA');
     });
 
-    const req = httpMock.expectOne('/api/v1/trocas/1/concluir');
-    expect(req.request.method).toBe('PATCH');
-    req.flush(trocaConcluida);
+    expect(http.patch).toHaveBeenCalledWith('/api/v1/trocas/1/concluir', {});
   });
 
   it('CT-31: Listar trocas do cliente deve retornar array', () => {
-    service.listarPorCliente(1).subscribe(trocas => {
-      expect(trocas.length).toBe(1);
-      expect(trocas[0].clienteId).toBe(1);
+    http.get.mockReturnValue(of([mockTroca]));
+
+    service.listarPorCliente(1).subscribe(result => {
+      expect(result.length).toBe(1);
+      expect(result[0].clienteId).toBe(1);
     });
 
-    const req = httpMock.expectOne('/api/v1/trocas/cliente/1');
-    expect(req.request.method).toBe('GET');
-    req.flush([mockTroca]);
+    expect(http.get).toHaveBeenCalledWith('/api/v1/trocas/cliente/1');
   });
 });
