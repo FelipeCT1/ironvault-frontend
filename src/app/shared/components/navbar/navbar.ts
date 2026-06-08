@@ -23,8 +23,8 @@ import { CarrinhoService } from '../../../core/services/carrinho.service';
           <a routerLink="/admin/pedidos" class="nav-link">📦 Pedidos</a>
           <a routerLink="/admin/trocas" class="nav-link">🔄 Trocas</a>
         }
-        <a routerLink="/ia" class="nav-link">🤖 IA</a>
         @if (auth.ehAdmin()) {
+          <a routerLink="/admin/analytics" class="nav-link">📊 Analytics</a>
           <a routerLink="/admin" class="nav-link">⚙️ Admin</a>
         }
       </div>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import type { Venda, FinalizarCompraDTO } from '../models/venda.model';
+import type { VendasPorCategoria } from '../models/analytics.model';
 
 @Injectable({ providedIn: 'root' })
 export class VendaService {
@@ -28,5 +29,12 @@ export class VendaService {
 
   atualizarStatus(id: number, acao: string) {
     return this.http.patch<Venda>(`/api/v1/vendas/${id}/${acao}`, {});
+  }
+
+  obterAnaliseVendas(categoriaIds: number[], dataInicio: string, dataFim: string) {
+    const ids = categoriaIds.join(',');
+    return this.http.get<VendasPorCategoria[]>(
+      `/api/v1/analytics/vendas-por-periodo?categoriaIds=${ids}&dataInicio=${dataInicio}&dataFim=${dataFim}`
+    );
   }
 }

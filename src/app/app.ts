@@ -5,11 +5,12 @@ import { CarrinhoService } from './core/services/carrinho.service';
 import { NavbarComponent } from './shared/components/navbar/navbar';
 import { TopbarComponent } from './shared/components/topbar/topbar';
 import { FooterComponent } from './shared/components/footer/footer';
+import { IaWidgetComponent } from './shared/components/ia-widget/ia-widget';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, TopbarComponent, FooterComponent],
+  imports: [RouterOutlet, NavbarComponent, TopbarComponent, FooterComponent, IaWidgetComponent],
   template: `
     <app-topbar />
     <app-navbar />
@@ -17,6 +18,7 @@ import { FooterComponent } from './shared/components/footer/footer';
       <router-outlet />
     </main>
     <app-footer />
+    <app-ia-widget />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -28,6 +30,4 @@ export class App implements OnInit {
     this.auth.verificarSessao().subscribe();
     this.carrinho.temItens();
   }
-
-
 }

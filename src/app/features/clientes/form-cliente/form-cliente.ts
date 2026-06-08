@@ -12,7 +12,7 @@ import { LoadingComponent } from '../../../shared/components/loading/loading';
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, AlertComponent, LoadingComponent],
   template: `
-    <div class="conteudo" style="max-width: 800px;">
+    <div class="conteudo" style="max-width: 800px; margin: 0 auto;">
       <div class="page-header">
         <div>
           <div class="page-header-label">Clientes</div>

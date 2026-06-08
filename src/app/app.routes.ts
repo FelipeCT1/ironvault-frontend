@@ -5,7 +5,6 @@ import { adminGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
   { path: '', redirectTo: '/produtos', pathMatch: 'full' },
 
-  { path: 'ia', loadComponent: () => import('./features/ia/ia.component').then((m) => m.IaComponent) },
 
   { path: 'login', loadComponent: () => import('./features/auth/login/login').then((m) => m.LoginComponent) },
 

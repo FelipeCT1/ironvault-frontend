@@ -165,18 +165,11 @@ import { LoadingComponent } from '../../../shared/components/loading/loading';
                         }
                       </div>
                       @if (cartoesSelecionados.length > 0) {
-                        <div style="margin-top: 12px;">
-                          <div class="campo">
-                            <span class="rotulo">Valor a cobrar neste cartão</span>
-                            <input
-                              class="form-control"
-                              type="number"
-                              [value]="getValorCartao()"
-                              (input)="setValorCartao($any($event.target).value)"
-                              min="10"
-                              step="0.01"
-                            />
-                          </div>
+                        <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--preto); border-radius: 4px; border: 1px solid var(--borda);">
+                          <span style="color: var(--mudo); font-size: 0.82rem;">Valor a cobrar</span>
+                          <strong style="color: var(--acento); font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem;">
+                            {{ getValorCartao() | currency:'BRL':'symbol':'1.2-2' }}
+                          </strong>
                         </div>
                       }
                     } @else {
@@ -256,7 +249,6 @@ export class CheckoutComponent {
   protected erro = signal('');
 
   protected cartoesSelecionados: number[] = [];
-  protected valoresCartoes: Record<number, number> = {};
   protected cuponsTrocaSelecionados: number[] = [];
 
   protected novoEndereco = {
@@ -289,7 +281,6 @@ export class CheckoutComponent {
         const primeiro = carts[0];
         if (primeiro.id) {
           this.cartoesSelecionados = [primeiro.id];
-          this.valoresCartoes[primeiro.id] = this.carrinho.totais().totalAPagar;
         }
       }
     });
@@ -301,16 +292,7 @@ export class CheckoutComponent {
   }
 
   protected getValorCartao(): number {
-    if (this.cartoesSelecionados.length === 0) return 0;
-    const id = this.cartoesSelecionados[0];
-    return this.valoresCartoes[id] ?? this.carrinho.totais().totalAPagar;
-  }
-
-  protected setValorCartao(val: string) {
-    if (this.cartoesSelecionados.length === 0) return;
-    const id = this.cartoesSelecionados[0];
-    const n = Number(val);
-    this.valoresCartoes[id] = isNaN(n) ? 0 : n;
+    return this.carrinho.totais().totalAPagar;
   }
 
   protected adicionarNovoCartao() {
@@ -376,8 +358,6 @@ export class CheckoutComponent {
   toggleCartao(cartao: CartaoCredito) {
     if (!cartao.id) return;
     this.cartoesSelecionados = [cartao.id];
-    const total = this.carrinho.totais().totalAPagar;
-    this.valoresCartoes[cartao.id] = total;
   }
 
   finalizar() {
@@ -388,20 +368,14 @@ export class CheckoutComponent {
 
     const totalAPagar = this.carrinho.totais().totalAPagar;
     const pagamentos = this.cartoesSelecionados
-      .map((id) => ({ cartaoId: id, valor: Number(this.valoresCartoes[id]) || 0 }))
-      .filter((p) => p.valor > 0);
-
-    const somaPagamentos = pagamentos.reduce((acc, p) => acc + p.valor, 0);
-    if (Math.abs(somaPagamentos - totalAPagar) > 0.01) {
-      this.erro.set(`Total a pagar é ${totalAPagar.toFixed(2)}, mas a soma dos cartões é ${somaPagamentos.toFixed(2)}`);
-      return;
-    }
+      .map((id) => ({ cartaoId: id, valor: totalAPagar }));
 
     this.salvando.set(true);
     this.erro.set('');
 
     const dto = {
       clienteId,
+      clienteNome: this.auth.nomeCliente(),
       itens: this.carrinho.itens().map((i) => ({
         produtoId: i.produto.id,
         produtoNome: i.produto.nome,

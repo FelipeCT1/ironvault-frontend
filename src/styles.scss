@@ -225,12 +225,15 @@ nav {
 .conteudo,
 .page-wrapper {
   padding: 28px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 16px;
 }
 
 .grid-3 {
@@ -578,6 +581,110 @@ tr:last-child td {
 .btn-sm {
   padding: 4px 10px;
   font-size: 0.68rem;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ── CART ── */
+
+.cart-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cart-item {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.cart-item-img {
+  width: 64px;
+  height: 64px;
+  background: var(--escuro);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.cart-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cart-item-info strong {
+  color: var(--branco);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cart-item-marca {
+  font-size: 13px;
+  color: var(--mudo);
+  margin-top: 2px;
+}
+
+.cart-item-qty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cart-item-qty-valor {
+  min-width: 24px;
+  text-align: center;
+  color: var(--branco);
+  font-weight: 600;
+}
+
+.cart-item-preco {
+  color: var(--acento);
+  min-width: 80px;
+  text-align: right;
+  font-weight: 700;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem;
+}
+
+.cart-sidebar {
+  min-width: 0;
+}
+
+.cart-checkout-btn {
+  width: 100%;
+  margin-top: 16px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
 }
 
 /* ── PAGE HEADER ── */
@@ -1288,11 +1395,29 @@ footer .logo-f span {
 
 /* ── RESPONSIVE ── */
 
+@media (max-width: 1024px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .grid-2,
   .grid-3,
   .grid-4 {
     grid-template-columns: 1fr;
+  }
+
+  .cart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-item {
+    flex-wrap: wrap;
+  }
+
+  .cart-item-preco {
+    min-width: auto;
   }
 
   .conteudo {

@@ -34,9 +34,9 @@ import { AlertComponent } from '../../../shared/components/alert/alert';
           <div class="campo">
             <label>Pedido</label>
             <select class="form-control" [(ngModel)]="pedidoSelecionado" (ngModelChange)="onPedidoChange()">
-              <option value="">Selecione um pedido</option>
+              <option [ngValue]="0">Selecione um pedido</option>
               @for (pedido of pedidosEntregues(); track pedido.id) {
-                <option [value]="pedido.id">{{ pedido.codigoPedido }} - {{ pedido.dataCriacao | date:'shortDate' }}</option>
+                <option [ngValue]="pedido.id">{{ pedido.codigoPedido }} - {{ pedido.dataCriacao | date:'shortDate' }}</option>
               }
             </select>
           </div>
@@ -45,9 +45,9 @@ import { AlertComponent } from '../../../shared/components/alert/alert';
             <div class="campo">
               <label>Produto</label>
               <select class="form-control" [(ngModel)]="produtoSelecionado">
-                <option value="">Selecione um produto</option>
+                <option [ngValue]="0">Selecione um produto</option>
                 @for (item of itensDisponiveis(); track item.produtoId) {
-                  <option [value]="item.produtoId">{{ item.produtoNome }}</option>
+                  <option [ngValue]="item.produtoId">{{ item.produtoNome }}</option>
                 }
               </select>
             </div>
@@ -116,7 +116,10 @@ export class SolicitarTrocaComponent {
   }
 
   solicitar() {
-    if (!this.pedidoSelecionado || !this.produtoSelecionado || !this.motivo) return;
+    if (!this.pedidoSelecionado || !this.produtoSelecionado || !this.motivo) {
+      this.erro.set('Preencha todos os campos obrigatórios (pedido, produto, motivo).');
+      return;
+    }
 
     const item = this.itensDisponiveis().find((i) => i.produtoId === this.produtoSelecionado);
     if (!item) return;

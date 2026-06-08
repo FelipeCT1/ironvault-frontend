@@ -25,33 +25,33 @@ import { ModalComponent } from '../../../shared/components/modal/modal';
           <a routerLink="/produtos" class="btn btn-accent btn-sm">Ver Produtos</a>
         </app-empty-state>
       } @else {
-        <div style="display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start;">
-          <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="cart-grid">
+          <div class="cart-items">
             @for (item of carrinho.itens(); track item.produto.id) {
-              <div class="card" style="display: flex; gap: 16px; align-items: center;">
-                <div style="width: 64px; height: 64px; background: var(--escuro); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;">
+              <div class="card cart-item">
+                <div class="cart-item-img">
                   💊
                 </div>
-                <div style="flex: 1;">
-                  <strong style="color: var(--branco);">{{ item.produto.nome }}</strong>
-                  <p style="font-size: 13px; color: var(--mudo);">{{ item.produto.marca }}</p>
+                <div class="cart-item-info">
+                  <strong>{{ item.produto.nome }}</strong>
+                  <p class="cart-item-marca">{{ item.produto.marca }}</p>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="cart-item-qty">
                   <button class="btn btn-sm btn-icon" (click)="carrinho.alterarQuantidade(item.produto.id, item.quantidade - 1)">-</button>
-                  <span style="min-width: 24px; text-align: center; color: var(--branco);">{{ item.quantidade }}</span>
+                  <span class="cart-item-qty-valor">{{ item.quantidade }}</span>
                   <button class="btn btn-sm btn-icon" (click)="carrinho.alterarQuantidade(item.produto.id, item.quantidade + 1)">+</button>
                 </div>
-                <strong style="color: var(--acento); min-width: 80px; text-align: right;">
+                <span class="cart-item-preco">
                   {{ item.precoUnitario * item.quantidade | currency:'BRL':'symbol':'1.2-2' }}
-                </strong>
+                </span>
                 <button class="btn btn-sm btn-danger" (click)="carrinho.removerItem(item.produto.id)">Remover</button>
               </div>
             }
           </div>
 
-          <div>
+          <div class="cart-sidebar">
             <app-order-summary [totais]="carrinho.totais()" />
-            <a routerLink="/checkout" class="btn btn-accent" style="width: 100%; margin-top: 16px; text-align: center; text-decoration: none;">
+            <a routerLink="/checkout" class="btn btn-accent cart-checkout-btn">
               Continuar para Checkout
             </a>
           </div>

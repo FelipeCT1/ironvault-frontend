@@ -76,9 +76,10 @@ import { LoadingComponent } from '../../../shared/components/loading/loading';
           </div>
         </div>
 
-        <div>
+        <div class="btn-group">
           <a routerLink="/admin/pedidos" class="btn btn-primary">Gerenciar Pedidos</a>
           <a routerLink="/admin/trocas" class="btn btn-secondary">Gerenciar Trocas</a>
+          <a routerLink="/admin/analytics" class="btn btn-secondary">📊 Análise de Vendas</a>
         </div>
       }
     </div>
