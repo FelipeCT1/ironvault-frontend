@@ -56,11 +56,11 @@ const CORES_CATEGORIAS = ['#e8ff00', '#3b82f6', '#ff4d00', '#a855f7', '#22c55e',
             </label>
             <div class="date-range">
               <div class="date-field">
-                <input type="month" [(ngModel)]="dataInicio" />
+                <input type="date" [(ngModel)]="dataInicio" />
                 <span class="date-arrow">→</span>
               </div>
               <div class="date-field">
-                <input type="month" [(ngModel)]="dataFim" />
+                <input type="date" [(ngModel)]="dataFim" />
               </div>
             </div>
           </div>
@@ -294,6 +294,21 @@ const CORES_CATEGORIAS = ['#e8ff00', '#3b82f6', '#ff4d00', '#a855f7', '#22c55e',
         cursor: pointer;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+      }
+      .date-field input[type='date'] {
+        text-transform: none;
+        letter-spacing: 0;
+        font-size: 0.78rem;
+        min-height: 36px;
+      }
+      .date-field input[type='date']::-webkit-calendar-picker-indicator {
+        filter: invert(0.7);
+        cursor: pointer;
+        padding: 2px;
+      }
+      .date-field input[type='date']:focus {
+        outline: none;
+        background: var(--painel);
       }
       .date-field input:focus {
         outline: none;
@@ -561,8 +576,8 @@ export class AnalyticsComponent {
 
   protected categorias = signal<Categoria[]>([]);
   protected categoriasSelecionadas = signal<Set<number>>(new Set());
-  protected dataInicio = '2025-05';
-  protected dataFim = '2026-06';
+  protected dataInicio = '2025-05-01';
+  protected dataFim = '2026-06-30';
   protected carregando = signal(false);
   protected erro = signal<string | null>(null);
   protected semDados = signal(true);
@@ -599,7 +614,7 @@ export class AnalyticsComponent {
     this.erro.set(null);
     this.semDados.set(false);
 
-    this.vendaService.obterAnaliseVendas(ids, this.dataInicio + '-01', this.dataFim + '-01').subscribe({
+    this.vendaService.obterAnaliseVendas(ids, this.dataInicio, this.dataFim).subscribe({
       next: (dados) => {
         this.renderizarGrafico(dados);
         this.carregando.set(false);
